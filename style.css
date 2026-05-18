@@ -1,0 +1,298 @@
+/* ═══════════════════════════════════════════
+   PocketLedger — style.css
+   Dark-first, mono-ledger aesthetic
+═══════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ── Scrollbar hide util ── */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Custom scrollbar for list ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #312c27; border-radius: 99px; }
+
+/* ═══ LIGHT MODE ══════════════════════════ */
+html.light body {
+  background: #f5f3ef;
+  color: #1c1814;
+}
+html.light .light-bg {
+  background: rgba(245,243,239,0.9) !important;
+  border-color: #d4cdc0 !important;
+}
+html.light #addForm {
+  background: rgba(255,255,255,0.8);
+  border-color: #d4cdc0;
+}
+html.light input[type="number"],
+html.light input[type="text"],
+html.light input[type="date"],
+html.light input[type="search"] {
+  background: #fff !important;
+  border-color: #d4cdc0 !important;
+  color: #1c1814 !important;
+}
+html.light .cat-btn {
+  background: #e8e4db;
+  color: #4a4038;
+  border-color: #d4cdc0;
+}
+html.light .cat-btn.active {
+  background: #c8f135;
+  color: #0e0c0a;
+  border-color: #c8f135;
+}
+html.light .expense-item {
+  background: #fff;
+  border-color: #e8e4db;
+}
+html.light #toast > div {
+  background: #312c27;
+}
+html.light #modal > div {
+  background: #fff;
+  border-color: #d4cdc0;
+}
+html.light details summary {
+  color: #9a8d7a;
+}
+html.light details summary:hover {
+  color: #62564a;
+}
+
+/* ═══ CATEGORY BUTTONS ════════════════════ */
+.cat-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 9999px;
+  border: 1px solid #4a4038;
+  background: #312c27;
+  color: #9a8d7a;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+.cat-btn:hover {
+  border-color: #c8f135;
+  color: #c8f135;
+}
+.cat-btn.active {
+  background: #c8f135;
+  color: #0e0c0a;
+  border-color: #c8f135;
+  font-weight: 500;
+}
+
+/* ═══ TAB BUTTONS ════════════════════════ */
+.tab-btn.active {
+  background: #c8f135;
+  color: #0e0c0a !important;
+  border-color: #c8f135 !important;
+  font-weight: 500;
+}
+
+/* ═══ EXPENSE ITEM ════════════════════════ */
+.expense-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.875rem;
+  border: 1px solid #312c27;
+  background: #1c1814;
+  transition: border-color 0.15s, background 0.15s;
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.expense-item:hover {
+  border-color: #4a4038;
+  background: #231e19;
+}
+
+.expense-cat-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: #312c27;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.expense-info {
+  flex: 1;
+  min-width: 0;
+}
+.expense-desc {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  color: #e8e4db;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.expense-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: #62564a;
+  margin-top: 0.1rem;
+}
+
+.expense-amount {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #c8f135;
+  flex-shrink: 0;
+}
+
+.expense-delete {
+  opacity: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.4rem;
+  border: 1px solid #4a4038;
+  background: transparent;
+  color: #62564a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.expense-item:hover .expense-delete {
+  opacity: 1;
+}
+.expense-delete:hover {
+  background: #ff4f4f20;
+  border-color: #ff4f4f;
+  color: #ff4f4f;
+}
+
+/* ═══ CATEGORY BAR ════════════════════════ */
+.cat-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: slideUp 0.2s ease;
+}
+.cat-bar-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: #9a8d7a;
+  width: 7rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+.cat-bar-track {
+  flex: 1;
+  height: 6px;
+  background: #312c27;
+  border-radius: 99px;
+  overflow: hidden;
+}
+.cat-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: #c8f135;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cat-bar-amt {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: #9a8d7a;
+  width: 4rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ═══ BUDGET BAR ══════════════════════════ */
+#budgetBar.over-budget {
+  background: #ff4f4f;
+}
+#budgetBar.near-budget {
+  background: #ffb347;
+}
+
+/* ═══ NUMBER INPUT CLEAN ══════════════════ */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] { -moz-appearance: textfield; }
+
+/* ═══ MODAL ═══════════════════════════════ */
+#modal.open {
+  display: flex !important;
+}
+
+/* ═══ TOAST ═══════════════════════════════ */
+#toast.show {
+  display: block !important;
+}
+
+/* ═══ DATE INPUT ═══════════════════════════ */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.4);
+  cursor: pointer;
+}
+html.light input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+}
+
+/* ═══ SEARCH ══════════════════════════════ */
+input[type="search"]::-webkit-search-cancel-button {
+  filter: invert(0.4);
+}
+
+/* ═══ FONT WEIGHT HELPERS ════════════════ */
+.font-700 { font-weight: 700; }
+.font-800 { font-weight: 800; }
+
+/* ═══ ANIMATIONS ══════════════════════════ */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pop {
+  0%   { transform: scale(0.92); opacity: 0; }
+  60%  { transform: scale(1.03); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-5px); }
+  60%     { transform: translateX(5px); }
+}
+
+/* ═══ CONFETTI PARTICLE ═══════════════════ */
+.confetti-piece {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  top: -10px;
+  border-radius: 2px;
+  pointer-events: none;
+  animation: confettiFall linear forwards;
+  z-index: 9999;
+}
+@keyframes confettiFall {
+  to {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}

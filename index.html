@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PocketLedger — Track money. No nonsense.</title>
+  <meta name="description" content="Track every dollar. No account. No subscription. No nonsense. Works offline, stores locally, free forever." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+          colors: {
+            ink: {
+              50:  '#f5f3ef',
+              100: '#e8e4db',
+              200: '#d4cdc0',
+              300: '#b8ae9e',
+              400: '#9a8d7a',
+              500: '#7d6e5c',
+              600: '#62564a',
+              700: '#4a4038',
+              800: '#312c27',
+              900: '#1c1814',
+              950: '#0e0c0a',
+            },
+            ledger: '#c8f135',
+            danger: '#ff4f4f',
+            warn: '#ffb347',
+          },
+          animation: {
+            'slide-up': 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            'fade-in': 'fadeIn 0.2s ease',
+            'pop': 'pop 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+            'shake': 'shake 0.4s ease',
+          },
+          keyframes: {
+            slideUp: { from: { opacity: 0, transform: 'translateY(12px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
+            fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
+            pop: { '0%': { transform: 'scale(0.9)', opacity: 0 }, '60%': { transform: 'scale(1.04)' }, '100%': { transform: 'scale(1)', opacity: 1 } },
+            shake: { '0%,100%': { transform: 'translateX(0)' }, '20%': { transform: 'translateX(-6px)' }, '60%': { transform: 'translateX(6px)' } },
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="bg-ink-950 text-ink-100 font-mono min-h-screen transition-colors duration-300">
+
+  <!-- Light mode body overrides via class -->
+
+  <!-- ═══════════════════ HEADER ═══════════════════ -->
+  <header class="sticky top-0 z-50 border-b border-ink-800 bg-ink-950/90 backdrop-blur-sm dark:bg-ink-950/90 light-bg transition-colors">
+    <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-ledger font-display text-xl font-800 tracking-tight">PocketLedger</span>
+        <span class="hidden sm:inline-block text-xs text-ink-500 border border-ink-700 rounded px-1.5 py-0.5">offline · free forever</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <!-- Theme toggle -->
+        <button id="themeToggle" title="Toggle theme"
+          class="w-8 h-8 rounded-full border border-ink-700 flex items-center justify-center text-ink-400 hover:text-ledger hover:border-ledger transition-all duration-200">
+          <svg id="iconMoon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg id="iconSun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <!-- Export button -->
+        <button id="exportBtn" title="Export CSV"
+          class="w-8 h-8 rounded-full border border-ink-700 flex items-center justify-center text-ink-400 hover:text-ledger hover:border-ledger transition-all duration-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <!-- Clear data -->
+        <button id="clearBtn" title="Clear all data"
+          class="w-8 h-8 rounded-full border border-ink-700 flex items-center justify-center text-ink-400 hover:text-danger hover:border-danger transition-all duration-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════ MAIN ═══════════════════ -->
+  <main class="max-w-2xl mx-auto px-4 pb-24">
+
+    <!-- BALANCE HERO -->
+    <section class="mt-8 mb-6 animate-fade-in">
+      <p class="text-xs uppercase tracking-widest text-ink-500 mb-1">Total spent</p>
+      <div class="flex items-end gap-3">
+        <span id="totalAmount" class="text-6xl font-display font-800 text-ink-50 tabular-nums leading-none">$0.00</span>
+        <span id="budgetRemaining" class="mb-1 text-sm text-ink-400 hidden"></span>
+      </div>
+      <!-- Budget bar -->
+      <div id="budgetBarWrap" class="mt-4 hidden">
+        <div class="flex justify-between text-xs text-ink-500 mb-1">
+          <span>Budget used</span>
+          <span id="budgetPct">0%</span>
+        </div>
+        <div class="h-2 rounded-full bg-ink-800 overflow-hidden">
+          <div id="budgetBar" class="h-full rounded-full bg-ledger transition-all duration-500" style="width:0%"></div>
+        </div>
+      </div>
+      <!-- Month tabs -->
+      <div class="flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide">
+        <button id="tabAll"
+          class="tab-btn active shrink-0 text-xs border border-ledger text-ledger rounded-full px-3 py-1 transition-all">All time</button>
+        <button id="tabMonth"
+          class="tab-btn shrink-0 text-xs border border-ink-700 text-ink-400 rounded-full px-3 py-1 hover:border-ink-500 transition-all">This month</button>
+        <button id="tabWeek"
+          class="tab-btn shrink-0 text-xs border border-ink-700 text-ink-400 rounded-full px-3 py-1 hover:border-ink-500 transition-all">This week</button>
+        <button id="tabToday"
+          class="tab-btn shrink-0 text-xs border border-ink-700 text-ink-400 rounded-full px-3 py-1 hover:border-ink-500 transition-all">Today</button>
+      </div>
+    </section>
+
+    <!-- ADD EXPENSE FORM -->
+    <section class="mb-8">
+      <div id="addForm" class="border border-ink-800 rounded-2xl p-4 bg-ink-900/50 backdrop-blur-sm">
+        <p class="text-xs uppercase tracking-widest text-ink-500 mb-3">Add expense</p>
+        <div class="flex gap-2 mb-3">
+          <!-- Amount -->
+          <div class="relative flex-1">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 font-mono text-sm">$</span>
+            <input id="inputAmount" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00"
+              class="w-full pl-7 pr-3 py-2.5 rounded-xl bg-ink-800 border border-ink-700 text-ink-50 placeholder-ink-600 font-mono text-sm focus:outline-none focus:border-ledger transition-colors" />
+          </div>
+          <!-- Description -->
+          <input id="inputDesc" type="text" placeholder="What for?" maxlength="60"
+            class="flex-[2] px-3 py-2.5 rounded-xl bg-ink-800 border border-ink-700 text-ink-50 placeholder-ink-600 font-mono text-sm focus:outline-none focus:border-ledger transition-colors" />
+        </div>
+        <div class="flex gap-2">
+          <!-- Category pills -->
+          <div class="flex-1 flex gap-1.5 flex-wrap">
+            <button data-cat="🍔 Food"     class="cat-btn">🍔 Food</button>
+            <button data-cat="🚗 Transport" class="cat-btn">🚗 Transport</button>
+            <button data-cat="🛍 Shopping" class="cat-btn">🛍 Shopping</button>
+            <button data-cat="🏠 Housing"  class="cat-btn">🏠 Housing</button>
+            <button data-cat="💊 Health"   class="cat-btn">💊 Health</button>
+            <button data-cat="🎉 Fun"      class="cat-btn">🎉 Fun</button>
+            <button data-cat="📦 Other"    class="cat-btn active">📦 Other</button>
+          </div>
+        </div>
+        <!-- Date + Submit -->
+        <div class="flex gap-2 mt-3">
+          <input id="inputDate" type="date"
+            class="flex-1 px-3 py-2.5 rounded-xl bg-ink-800 border border-ink-700 text-ink-400 font-mono text-sm focus:outline-none focus:border-ledger transition-colors" />
+          <button id="addBtn"
+            class="px-5 py-2.5 rounded-xl bg-ledger text-ink-950 font-display font-700 text-sm hover:brightness-110 active:scale-95 transition-all duration-150 flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add
+          </button>
+        </div>
+        <!-- Inline error -->
+        <p id="formError" class="text-danger text-xs mt-2 hidden"></p>
+      </div>
+    </section>
+
+    <!-- CATEGORY BREAKDOWN -->
+    <section id="breakdownSection" class="mb-6 hidden animate-slide-up">
+      <p class="text-xs uppercase tracking-widest text-ink-500 mb-3">By category</p>
+      <div id="categoryBars" class="space-y-2"></div>
+    </section>
+
+    <!-- EXPENSE LIST -->
+    <section>
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-xs uppercase tracking-widest text-ink-500">Transactions</p>
+        <input id="searchInput" type="search" placeholder="Search…"
+          class="text-xs px-3 py-1.5 rounded-lg bg-ink-800 border border-ink-700 text-ink-300 placeholder-ink-600 focus:outline-none focus:border-ledger w-32 transition-all focus:w-44" />
+      </div>
+
+      <!-- Empty state -->
+      <div id="emptyState" class="py-16 text-center animate-fade-in">
+        <div class="text-5xl mb-4">💸</div>
+        <p class="font-display text-ink-300 text-lg font-600 mb-1">No expenses yet</p>
+        <p class="text-ink-600 text-sm">Add your first one above — takes 3 seconds.</p>
+      </div>
+
+      <!-- List -->
+      <ul id="expenseList" class="space-y-2"></ul>
+    </section>
+
+    <!-- BUDGET SETTER -->
+    <section class="mt-10 mb-4">
+      <details class="group">
+        <summary class="cursor-pointer text-xs uppercase tracking-widest text-ink-600 hover:text-ink-400 transition-colors flex items-center gap-1 select-none">
+          <svg class="w-3 h-3 transition-transform group-open:rotate-90" fill="currentColor" viewBox="0 0 6 10"><path d="M1 1l4 4-4 4"/></svg>
+          Set monthly budget
+        </summary>
+        <div class="mt-3 flex gap-2">
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 font-mono text-sm">$</span>
+            <input id="budgetInput" type="number" placeholder="e.g. 2000" min="0"
+              class="pl-7 pr-3 py-2 rounded-xl bg-ink-800 border border-ink-700 text-ink-50 placeholder-ink-600 font-mono text-sm focus:outline-none focus:border-ledger w-40 transition-colors" />
+          </div>
+          <button id="setBudgetBtn"
+            class="px-4 py-2 rounded-xl border border-ink-600 text-ink-300 font-mono text-sm hover:border-ledger hover:text-ledger transition-all">
+            Save
+          </button>
+          <button id="clearBudgetBtn"
+            class="px-3 py-2 rounded-xl border border-ink-800 text-ink-600 font-mono text-xs hover:border-danger hover:text-danger transition-all">
+            Clear
+          </button>
+        </div>
+      </details>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════ TOAST ═══════════════════ -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden">
+    <div class="bg-ink-800 border border-ink-700 text-ink-100 text-sm font-mono px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 animate-pop">
+      <span id="toastIcon">✓</span>
+      <span id="toastMsg"></span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ CONFIRM MODAL ═══════════════════ -->
+  <div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="bg-ink-900 border border-ink-700 rounded-2xl p-6 mx-4 max-w-xs w-full animate-pop">
+      <p class="font-display font-700 text-ink-50 text-lg mb-2" id="modalTitle">Are you sure?</p>
+      <p class="text-ink-400 text-sm mb-5" id="modalBody"></p>
+      <div class="flex gap-2">
+        <button id="modalCancel" class="flex-1 py-2.5 rounded-xl border border-ink-700 text-ink-400 font-mono text-sm hover:border-ink-500 transition-all">Cancel</button>
+        <button id="modalConfirm" class="flex-1 py-2.5 rounded-xl bg-danger text-white font-mono text-sm hover:brightness-110 transition-all">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
